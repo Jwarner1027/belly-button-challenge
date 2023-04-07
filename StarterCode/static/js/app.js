@@ -23,9 +23,13 @@ function init() {
 
         firstSample = 940
 
-        console.log(firstSample);
+        // console.log(firstSample);
 
         createChart(firstSample);
+
+        createBubble(firstSample);
+
+        buildMetadata(firstSample);
     });
 };
 
@@ -59,28 +63,54 @@ function createChart(sample) {
     });
 };
 
+function createBubble(sample) {
+    d3.json(url).then((data) => {
+        let samples = data.samples;
+        let sampleValues = samples.filter(object => object.id == sample);
+        let sampleData = sampleValues[0]
+
+        let ids = sampleData.otu_ids;
+        let labels = sampleData.otu_labels;
+        let values = sampleData.sample_values;
+
+        let trace1 = {
+            x:ids,
+            y:values,
+            text: labels,
+            mode: 'markers',
+            marker: {
+                size: values,
+                color: ids,
+            }
+        };
+
+        let traceData1 = [trace1];
+
+        let layout = {
+            Title: 'Amount per Sample'
+        };
+        Plotly.newPlot("bubble", traceData1, layout)
+    });
+};
+
+function buildMetadata(sample) {
+    d3.json(url).then((data) => {
+        let metadata = data.metadata;
+        let sampleValues = metadata.filter(object => object.id == sample);
+        let sampleData = sampleValues[0];
+        console.log(data)
+        
+
+        Object.entries(sampleData).forEach(([key, value]) => {
+            console.log(key, value);
+            d3.select('#sample-metadata').append("div").html(`${key}: ${value}`)
+        });
+    });
+};
+
 function optionChanged(value) {
     console.log(value);
-
     createChart(value);
-}
-
-
-
-/*function getData() {
-    let dropdown = d3.select("#selDataset");
-    let dataset = dropdown.property("value");
-    let data = [];
-    for(i=0; i<dropdown.options.length; i++) {
-        if (dataset == dropdown.options[i]) (
-             data = this.values(data.i)
-        );
-    };
-    updatePlotly(data);
 };
 
-function updatePlotly(newdata) {
-    Plotly.restyle("bar", "values", [newdata]);
-};
-*/
 init()
