@@ -100,7 +100,7 @@ function buildMetadata(sample) {
         let sampleData = sampleValues[0];
         console.log(data)
         
-
+        d3.select('#sample-metadata').html("");
         Object.entries(sampleData).forEach(([key, value]) => {
             console.log(key, value);
             d3.select('#sample-metadata').append("div").html(`${key}: ${value}`)
@@ -111,6 +111,7 @@ function buildMetadata(sample) {
 function optionChanged(value) {
     console.log(value);
     createChart(value);
+    buildMetadata(value);
 };
 
 init()
